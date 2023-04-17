@@ -64,7 +64,7 @@ class ErrorController {
 
 	private sendError(message: Imessage): void {
 		this.res.status(message.statusCode || 500).json({
-			errorMessage: message.message,
+			message: message.message,
 			status: message.status || 'error',
 			isSuccess: message.isSuccess,
 			statusCode: message.statusCode,
