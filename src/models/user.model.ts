@@ -1,9 +1,10 @@
-import { Schema, model } from 'mongoose'
+import { Schema, model, Document } from 'mongoose'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import validator from 'validator'
 
-interface IUser {
+export interface IUser extends Document {
+	id: string
 	firstName: string
 	lastName: string
 	phone: string
@@ -17,7 +18,8 @@ interface IUser {
 	userSlug: string
 	passwordChangedAt: Date
 	isAccountActive: boolean
-	confirmToken: string
+	// confirmToken: string
+	isCorrectPassword: (userEnteredPassword: string, userPassword: string) => Promise<boolean>
 }
 
 const UserSchema = new Schema<IUser>({
@@ -75,6 +77,7 @@ const UserSchema = new Schema<IUser>({
 		type: String,
 		required: true,
 		default: 'user',
+		enum: ['user', 'admin', 'author'],
 	},
 	createdAt: {
 		type: Date,
@@ -93,9 +96,9 @@ const UserSchema = new Schema<IUser>({
 	passwordChangedAt: Date,
 	isAccountActive: {
 		type: Boolean,
-		default: false,
+		default: true,
 	},
-	confirmToken: String,
+	// confirmToken: String,
 })
 
 UserSchema.methods.isCorrectPassword = async function (
