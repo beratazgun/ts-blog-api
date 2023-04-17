@@ -5,8 +5,15 @@ import helmet from 'helmet'
 import cookieParser = require('cookie-parser')
 import rateLimit from 'express-rate-limit'
 import mongoSanitize from 'express-mongo-sanitize'
+import HandleError from './utils/HandleError'
 import cors from 'cors'
 dotenv.config()
+
+import authRoutes from './routes/auth.routes'
+import postRoutes from './routes/post.routes'
+import categoryRoutes from './routes/category.routes'
+import commentRoutes from './routes/comment.routes'
+import errorController from './controllers/error.controller'
 
 const app: Express = express()
 
@@ -36,5 +43,16 @@ app.use(limiter)
 
 app.use(express.json())
 app.use(cookieParser())
+
+app.use('/api/v1/auth', authRoutes)
+app.use('/api/v1/post', postRoutes)
+app.use('/api/v1/category', categoryRoutes)
+app.use('/api/v1/comment', commentRoutes)
+
+app.all('*', (req, res, next) => {
+	next(new HandleError('This route does not exist', 404, false))
+})
+
+app.use(errorController)
 
 export { app }
