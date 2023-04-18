@@ -18,7 +18,8 @@ export interface IUser extends Document {
 	userSlug: string
 	passwordChangedAt: Date
 	isAccountActive: boolean
-	// confirmToken: string
+	confirmToken: string
+	confirmTokenExpires: Date
 	isCorrectPassword: (userEnteredPassword: string, userPassword: string) => Promise<boolean>
 }
 
@@ -96,9 +97,10 @@ const UserSchema = new Schema<IUser>({
 	passwordChangedAt: Date,
 	isAccountActive: {
 		type: Boolean,
-		default: true,
+		default: false,
 	},
-	// confirmToken: String,
+	confirmToken: String,
+	confirmTokenExpires: Date,
 })
 
 UserSchema.methods.isCorrectPassword = async function (
