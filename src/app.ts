@@ -6,9 +6,11 @@ import cookieParser = require('cookie-parser')
 import rateLimit from 'express-rate-limit'
 import mongoSanitize from 'express-mongo-sanitize'
 import HandleError from './utils/HandleError'
+import path from 'path'
 import cors from 'cors'
 dotenv.config()
 
+import accountRoutes from './routes/account.routes'
 import authRoutes from './routes/auth.routes'
 import postRoutes from './routes/post.routes'
 import categoryRoutes from './routes/category.routes'
@@ -25,11 +27,18 @@ app.use(
 	})
 )
 
+app.set('view engine', 'pug')
+app.set('views', path.join(__dirname, 'views'))
+
 app.use(mongoSanitize())
 
 app.use(morgan('dev'))
 
 app.use(helmet())
+
+app.get('/email-verification', (req, res) => {
+	res.render('email/emailConfirm')
+})
 
 const limiter = rateLimit({
 	windowMs: 15 * 60 * 1000, // 15 minutes
@@ -48,6 +57,7 @@ app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/post', postRoutes)
 app.use('/api/v1/category', categoryRoutes)
 app.use('/api/v1/comment', commentRoutes)
+app.use('/', accountRoutes)
 
 app.all('*', (req, res, next) => {
 	next(new HandleError('This route does not exist', 404, false))
