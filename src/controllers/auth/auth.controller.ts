@@ -125,11 +125,8 @@ export const isAuthor = CatchBlock(async (req: Request, res: Response, next: Nex
 
 export const confirmAccount = CatchBlock(
 	async (req: Request, res: Response, next: NextFunction) => {
-		if (!res.locals.user.confirmToken && res.locals.user.isAccountActive === true)
+		if (!res.locals.user.confirmToken)
 			next(new HandleError('Oops. Something went wrong.', 401, false))
-
-		if (res.locals.user.confirmTokenExpires < Date.now())
-			next(new HandleError('Your token has expired.', 401, false))
 
 		if (
 			res.locals.user.confirmToken === req.query.token &&
@@ -146,5 +143,7 @@ export const confirmAccount = CatchBlock(
 				message: 'Your account has been activated successfully.',
 			})
 		}
+
+		next(new HandleError('Your token has expired.', 401, false))
 	}
 )
