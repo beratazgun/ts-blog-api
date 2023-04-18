@@ -1,4 +1,5 @@
 import User from '../../models/user.model'
+import crypto from 'crypto'
 import { IUser } from '../../models/user.model'
 import { Request, Response, NextFunction } from 'express'
 import lodash from 'lodash'
@@ -8,6 +9,7 @@ import { ISigninData } from './auth.interface'
 import HandleError from '../../utils/HandleError'
 import jwt from 'jsonwebtoken'
 import CatchBlock from '../../utils/CatchBlock'
+import { Email } from '../../utils/Email'
 
 export const signup = CatchBlock(async (req: Request, res: Response, next: NextFunction) => {
 	const { firstName, lastName, email, phone, password, passwordConfirm, role } = req.body
@@ -21,16 +23,27 @@ export const signup = CatchBlock(async (req: Request, res: Response, next: NextF
 		passwordConfirm,
 		role,
 		avatar: faker.image.avatar(),
+		confirmToken: crypto.randomBytes(32).toString('hex'),
+		confirmTokenExpires: Date.now() + 24 * 60 * 60 * 1000,
 		userSlug: `${lodash.lowerFirst(firstName)}-${lodash.lowerFirst(lastName)}`,
 	})
 
 	const sendCookie = new SendCookie(user.id, res)
 	sendCookie.send()
 
+	const emailOptions = {
+		user,
+		subject: 'Account Verification | BLOG',
+	}
+
+	const sendEmail = new Email()
+	await sendEmail.sendConfirmationEmail(emailOptions)
+
 	res.status(200).json({
 		statusCode: 200,
 		isSuccess: true,
-		message: 'Your account has been created successfully.',
+		message:
+			'Your account has been created successfully. Please check your email to confirm your account.',
 	})
 })
 
@@ -107,6 +120,31 @@ export const isAuthor = CatchBlock(async (req: Request, res: Response, next: Nex
 	if (res.locals.user.role !== 'author') {
 		return next(new HandleError('You are not authorized to perform this action.', 401, false))
 	}
-
 	next()
 })
+
+export const confirmAccount = CatchBlock(
+	async (req: Request, res: Response, next: NextFunction) => {
+		if (!res.locals.user.confirmToken && res.locals.user.isAccountActive === true)
+			next(new HandleError('Oops. Something went wrong.', 401, false))
+
+		if (res.locals.user.confirmTokenExpires < Date.now())
+			next(new HandleError('Your token has expired.', 401, false))
+
+		if (
+			res.locals.user.confirmToken === req.query.token &&
+			res.locals.user.confirmTokenExpires > Date.now()
+		) {
+			await User.findByIdAndUpdate(res.locals.user.id, {
+				isAccountActive: true,
+				$unset: { confirmToken: 1, confirmTokenExpires: 1 },
+			})
+
+			res.status(200).json({
+				statusCode: 200,
+				isSuccess: true,
+				message: 'Your account has been activated successfully.',
+			})
+		}
+	}
+)
