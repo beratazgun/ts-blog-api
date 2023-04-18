@@ -18,6 +18,5 @@ router.use(protectRoute)
 
 router.route('/logout').post(logout)
 router.route('/get-me').get(getMe)
-router.route('/confirm-account').post(confirmAccount)
 
 export default router
