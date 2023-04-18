@@ -6,7 +6,7 @@ import {
 	getMe,
 	protectRoute,
 	// forgotPassword,
-	// confirmAccount,
+	confirmAccount,
 } from '../controllers/auth/auth.controller'
 
 const router = express.Router()
@@ -18,5 +18,6 @@ router.use(protectRoute)
 
 router.route('/logout').post(logout)
 router.route('/get-me').get(getMe)
+router.route('/confirm-account').post(confirmAccount)
 
 export default router
