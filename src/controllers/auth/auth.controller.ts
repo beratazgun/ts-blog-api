@@ -1,15 +1,16 @@
-import User from '../../models/user.model'
 import crypto from 'crypto'
-import { IUser } from '../../models/user.model'
-import { Request, Response, NextFunction } from 'express'
 import lodash from 'lodash'
 import { faker } from '@faker-js/faker'
+import { Request, Response, NextFunction } from 'express'
+import jwt from 'jsonwebtoken'
+
+import User from '../../models/user.model'
+import { IUser } from '../../models/user.model'
 import { SendCookie } from '../../utils/SendCookie'
 import { ISigninData } from './auth.interface'
 import HandleError from '../../utils/HandleError'
-import jwt from 'jsonwebtoken'
 import CatchBlock from '../../utils/CatchBlock'
-import { Email } from '../../utils/Email'
+import { EmailService } from '../../utils/EmailService'
 
 export const signup = CatchBlock(async (req: Request, res: Response, next: NextFunction) => {
 	const { firstName, lastName, email, phone, password, passwordConfirm, role } = req.body
@@ -23,7 +24,10 @@ export const signup = CatchBlock(async (req: Request, res: Response, next: NextF
 		passwordConfirm,
 		role,
 		avatar: faker.image.avatar(),
-		confirmToken: crypto.randomBytes(32).toString('hex'),
+		confirmToken: crypto
+			.createHash('sha256')
+			.update(crypto.randomBytes(32).toString('hex'))
+			.digest('hex'),
 		confirmTokenExpires: Date.now() + 24 * 60 * 60 * 1000,
 		userSlug: `${lodash.lowerFirst(firstName)}-${lodash.lowerFirst(lastName)}`,
 	})
@@ -33,11 +37,14 @@ export const signup = CatchBlock(async (req: Request, res: Response, next: NextF
 
 	const emailOptions = {
 		user,
+		token: user.confirmToken,
 		subject: 'Account Verification | BLOG',
+		templateName: 'emailConfirm',
+		route: 'verify/confirm-account',
 	}
 
-	const sendEmail = new Email()
-	await sendEmail.sendConfirmationEmail(emailOptions)
+	const emailService = new EmailService()
+	await emailService.sendEmail(emailOptions)
 
 	res.status(200).json({
 		statusCode: 200,
@@ -147,3 +154,74 @@ export const confirmAccount = CatchBlock(
 		next(new HandleError('Your token has expired.', 401, false))
 	}
 )
+
+export const sendForgotPasswordEmail = CatchBlock(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const { email }: { email: string } = req.body
+
+		const user = await User.findOne({ email })
+
+		if (!user) {
+			return next(new HandleError('There is no user with email address.', 404, false))
+		}
+
+		const resetToken = user.createPasswordResetToken()
+		await user.save({ validateBeforeSave: false })
+
+		const emailOptions = {
+			token: resetToken,
+			user,
+			subject: 'Forgot Password - Password Reset Request',
+			templateName: 'passwordResetEmail',
+			route: 'ap/reset-password',
+		}
+
+		const emailService = new EmailService()
+		await emailService.sendEmail(emailOptions)
+
+		res.status(200).json({
+			statusCode: 200,
+			isSuccess: true,
+			message: 'Password reset mail has been sent to your email address.',
+		})
+	}
+)
+
+export const resetPassword = CatchBlock(async (req: Request, res: Response, next: NextFunction) => {
+	const { password, passwordConfirm }: { password: string; passwordConfirm: string } = req.body
+
+	const hashedToken = crypto
+		.createHash('sha256')
+		.update(req.query.token as string)
+		.digest('hex')
+
+	const user = await User.findOne({
+		passwordResetToken: hashedToken,
+		passwordResetExpires: { $gt: Date.now() },
+	})
+
+	if (!user) {
+		return next(new HandleError('Token is invalid or has expired.', 400, false))
+	}
+
+	user.password = password
+	user.passwordConfirm = passwordConfirm
+	user.passwordResetToken = undefined
+	user.passwordResetExpires = undefined
+	await user.save()
+
+	const emailOptions = {
+		user,
+		subject: 'Password Reset Successfully',
+		templateName: 'passwordResetSuccess',
+	}
+
+	const emailService = new EmailService()
+	await emailService.sendEmail(emailOptions)
+
+	res.status(200).json({
+		statusCode: 200,
+		isSuccess: true,
+		message: 'Your password has been reset successfully.',
+	})
+})
