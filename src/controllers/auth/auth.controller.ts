@@ -7,13 +7,14 @@ import jwt from 'jsonwebtoken'
 import User from '../../models/user.model'
 import { IUser } from '../../models/user.model'
 import { SendCookie } from '../../utils/SendCookie'
-import { ISigninData } from './auth.interface'
+import { IResetPasswordData, ISigninData, ISignupData, IUpdatePasswordData } from './auth.interface'
 import HandleError from '../../utils/HandleError'
 import CatchBlock from '../../utils/CatchBlock'
 import { EmailService } from '../../utils/EmailService'
 
 export const signup = CatchBlock(async (req: Request, res: Response, next: NextFunction) => {
-	const { firstName, lastName, email, phone, password, passwordConfirm, role } = req.body
+	const { firstName, lastName, email, phone, password, passwordConfirm, role }: ISignupData =
+		req.body
 
 	const user: IUser = await User.create({
 		firstName,
@@ -188,7 +189,7 @@ export const sendForgotPasswordEmail = CatchBlock(
 )
 
 export const resetPassword = CatchBlock(async (req: Request, res: Response, next: NextFunction) => {
-	const { password, passwordConfirm }: { password: string; passwordConfirm: string } = req.body
+	const { password, passwordConfirm }: IResetPasswordData = req.body
 
 	const hashedToken = crypto
 		.createHash('sha256')
@@ -225,3 +226,33 @@ export const resetPassword = CatchBlock(async (req: Request, res: Response, next
 		message: 'Your password has been reset successfully.',
 	})
 })
+
+export const updatePassword = CatchBlock(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const { currentPassword, newPassword, newPasswordConfirm }: IUpdatePasswordData = req.body
+
+		const user = await User.findById(res.locals.user.id).select('+password')
+
+		if (!user) {
+			return next(new HandleError("User doesn't exist", 404, false))
+		}
+
+		if (!(await user?.isCorrectPassword(currentPassword, user.password))) {
+			return next(new HandleError('Your current password is wrong.', 401, false))
+		}
+
+		if (newPassword !== newPasswordConfirm) {
+			return next(new HandleError('new password and confirm password must be same.', 400, false))
+		}
+
+		user.password = newPassword
+		user.passwordConfirm = newPasswordConfirm
+		await user.save()
+
+		res.status(200).json({
+			statusCode: 200,
+			isSuccess: true,
+			message: 'Your password has been updated successfully.',
+		})
+	}
+)
