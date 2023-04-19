@@ -1,7 +1,7 @@
 import { Schema, model, Document } from 'mongoose'
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
 import validator from 'validator'
+import crypto from 'crypto'
 
 export interface IUser extends Document {
 	id: string
@@ -16,11 +16,14 @@ export interface IUser extends Document {
 	updatedAt: Date
 	avatar: string
 	userSlug: string
-	passwordChangedAt: Date
 	isAccountActive: boolean
-	confirmToken: string
-	confirmTokenExpires: Date
+	confirmToken: string | undefined
+	confirmTokenExpires: Date | undefined
+	passwordResetToken: string | undefined
+	passwordResetExpires: Date | undefined
+	passwordChangedAt: Date
 	isCorrectPassword: (userEnteredPassword: string, userPassword: string) => Promise<boolean>
+	createPasswordResetToken: () => string
 }
 
 const UserSchema = new Schema<IUser>({
@@ -94,13 +97,15 @@ const UserSchema = new Schema<IUser>({
 	userSlug: {
 		type: String,
 	},
-	passwordChangedAt: Date,
 	isAccountActive: {
 		type: Boolean,
 		default: false,
 	},
 	confirmToken: String,
 	confirmTokenExpires: Date,
+	passwordChangedAt: Date,
+	passwordResetToken: String,
+	passwordResetExpires: Date,
 })
 
 UserSchema.methods.isCorrectPassword = async function (
@@ -111,12 +116,22 @@ UserSchema.methods.isCorrectPassword = async function (
 }
 
 UserSchema.pre<IUser>('save', async function (next) {
+	if (!this.isModified('password')) return next()
+
 	this.password = await bcrypt.hash(this.password, 12)
 
+	// this is to remove the passwordConfirm field from the database
 	this.passwordConfirm = undefined
 
 	next()
 })
+
+UserSchema.methods.createPasswordResetToken = function (): string {
+	const token = crypto.randomBytes(32).toString('hex')
+	this.passwordResetToken = crypto.createHash('sha256').update(token).digest('hex')
+	this.passwordResetExpires = Date.now() + 15 * 60 * 1000
+	return token
+}
 
 const User = model<IUser>('User', UserSchema)
 
