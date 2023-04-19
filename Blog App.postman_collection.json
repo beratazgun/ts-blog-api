@@ -1,0 +1,561 @@
+{
+	"info": {
+		"_postman_id": "a319f23b-28d7-4e06-a5e3-112ad25af9ae",
+		"name": "Blog App",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21760193"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Signup",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"{{$randomFirstName}}\",\n    \"lastName\": \"{{$randomLastName}}\",\n    \"phone\": \"{{$randomPhoneNumber}}\",\n    \"email\": \"{{$randomEmail}}\",\n    \"password\": \"Password123_\",\n    \"passwordConfirm\": \"Password123_\",\n    \"role\": \"user\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/v1/auth/signup",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Signin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"vella94@yahoo.com\",\n    \"password\": \"Password123_\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/v1/auth/signin",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/v1/auth/logout",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Me",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/v1/auth/get-me",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"get-me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm account",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/verify/confirm-account/?token=b85fd41a47225a4e9cf807a9a0ebd169f19bac1bb8297443763e8c123792e824",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"verify",
+								"confirm-account",
+								""
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "b85fd41a47225a4e9cf807a9a0ebd169f19bac1bb8297443763e8c123792e824"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Pasword",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"kelsie.wyman@yahoo.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/forgot-password",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Posts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/v1/post/get-my-posts",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"post",
+								"get-my-posts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get my comments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/v1/comment/get-my-comments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"comment",
+								"get-my-comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": \"Password123!!\",\n    \"passwordConfirm\": \"Password123!!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/ap/reset-password/?token=f7e2b8b85b7a1f81719c176e8dc3bda8c6b957e04fa639bdc8fec84d485704f3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"ap",
+								"reset-password",
+								""
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "f7e2b8b85b7a1f81719c176e8dc3bda8c6b957e04fa639bdc8fec84d485704f3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Password",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Post",
+			"item": [
+				{
+					"name": "Create Post",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"{{$randomLoremSentence}}\",\n    \"description\": \"{{$randomLoremSentences}}\",\n    \"content\": \"{{$randomLoremParagraph}} {{$randomLoremParagraph}} {{$randomLoremParagraph}} {{$randomLoremParagraph}}  {{$randomLoremParagraph}} {{$randomLoremParagraph}} {{$randomLoremParagraph}} {{$randomLoremParagraph}} {{$randomLoremParagraph}}  {{$randomLoremParagraph}} {{$randomLoremParagraph}} {{$randomLoremParagraph}} {{$randomLoremParagraph}} {{$randomLoremParagraph}}  {{$randomLoremParagraph}} \",\n    \"images\": [\"https://loremflickr.com/640/480/city\"],\n    \"category\": \"software\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/v1/post/create-post",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"post",
+								"create-post"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Post",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/v1/post/delete-post/643fc5f81330af34d0e50217",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"post",
+								"delete-post",
+								"643fc5f81330af34d0e50217"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get comments of post",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/v1/post/get-comments-of-post/643d99b9e1585b96aedb3205",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"post",
+								"get-comments-of-post",
+								"643d99b9e1585b96aedb3205"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All posts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/v1/post/get-all-posts",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"post",
+								"get-all-posts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get post by slug",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/v1/post/get-post-by-slug/ipsam-aut-in-fugiat-molestiae-quis-aliquid-dolores-porro-id.",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"post",
+								"get-post-by-slug",
+								"ipsam-aut-in-fugiat-molestiae-quis-aliquid-dolores-porro-id."
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get post by user slug",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/v1/post/get-post-by-user-slug/travon-rosenbaum",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"post",
+								"get-post-by-user-slug",
+								"travon-rosenbaum"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get post by category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/v1/post/get-post-by-category-slug/life",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"post",
+								"get-post-by-category-slug",
+								"life"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Comment",
+			"item": [
+				{
+					"name": "Create Comment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"comment\": \"{{$randomLoremParagraph}}{{$randomLoremParagraph}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/v1/comment/create-comment/643d99b9e1585b96aedb3205",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"comment",
+								"create-comment",
+								"643d99b9e1585b96aedb3205"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Comment",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/v1/comment/delete-comment/6407455e151a2c829123153b",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"comment",
+								"delete-comment",
+								"6407455e151a2c829123153b"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get comments of Post",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/v1/comment/get-comments-of-post/643d99b9e1585b96aedb3205",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"comment",
+								"get-comments-of-post",
+								"643d99b9e1585b96aedb3205"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Category",
+			"item": [
+				{
+					"name": "Create Category",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"categoryName\": \"softwadwadawdre\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/v1/category/create-category",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"category",
+								"create-category"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/v1/category/get-all-categories",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"category",
+								"get-all-categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete category",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/v1/category/delete-category/643d9a05ae0539b96a87ffa9",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"category",
+								"delete-category",
+								"643d9a05ae0539b96a87ffa9"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
