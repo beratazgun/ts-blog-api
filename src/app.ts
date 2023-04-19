@@ -5,11 +5,11 @@ import helmet from 'helmet'
 import cookieParser = require('cookie-parser')
 import rateLimit from 'express-rate-limit'
 import mongoSanitize from 'express-mongo-sanitize'
-import HandleError from './utils/HandleError'
 import path from 'path'
 import cors from 'cors'
 dotenv.config()
 
+import HandleError from './utils/HandleError'
 import accountRoutes from './routes/account.routes'
 import authRoutes from './routes/auth.routes'
 import postRoutes from './routes/post.routes'
@@ -35,10 +35,6 @@ app.use(mongoSanitize())
 app.use(morgan('dev'))
 
 app.use(helmet())
-
-app.get('/email-verification', (req, res) => {
-	res.render('email/emailConfirm')
-})
 
 const limiter = rateLimit({
 	windowMs: 15 * 60 * 1000, // 15 minutes
