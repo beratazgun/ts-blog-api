@@ -80,6 +80,7 @@ export default (err: any, req: Request, res: Response, next: NextFunction) => {
 	if (err.name === 'MongoServerError') errorController.handleDuplicateFieldsDB()
 	if (err.name === 'JsonWebTokenError') errorController.handleJWTError()
 	else {
+		console.log(err)
 		res.status(err.statusCode || 500).json({
 			status: err.status || 'error',
 			isSuccess: err.isSuccess,
